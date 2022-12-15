@@ -4,6 +4,8 @@
   "author": "Marsyu <zhengyu6211@outlook.com>",
   "version": "1.1.2",
   "main": "src/packages/index.js",
+  "repository": "https://github.com/MarsYu123/mars-echarts.git",
+  "license": "MIT",
   "files": [
     "src/packages"
   ],
