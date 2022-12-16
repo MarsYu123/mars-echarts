@@ -195,7 +195,6 @@ export default {
         }]
       }
     }
-    console.log(config,'---')
     this.echart.setOption(merge(config, targetConfig))
   },
   methods: {
@@ -208,8 +207,6 @@ export default {
       this.echart.setOption(config)
     },
     handleTouchEnd () {
-      return
-      console.log('-11')
       this.echart.dispatchAction({
         type: 'hideTip'
       })
