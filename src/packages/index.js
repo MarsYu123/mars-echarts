@@ -1,8 +1,13 @@
 import CompEchartsLine from './echarts/CompEchartsLine.vue'
+import CompEchartsBar from './echarts/CompEchartsBar.vue'
+import CompEchartsScatter from './echarts/CompEchartsScatter.vue'
+
 import * as utils from './utils/util'
 
 const components = {
-  CompEchartsLine
+  CompEchartsLine,
+  CompEchartsBar,
+  CompEchartsScatter
 }
 
 // 循环注册组件
@@ -23,5 +28,7 @@ export default install
 // 按需引入暴露
 export {
   utils,
-  CompEchartsLine
+  CompEchartsLine,
+  CompEchartsBar,
+  CompEchartsScatter
 }

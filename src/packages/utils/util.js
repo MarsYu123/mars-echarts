@@ -29,3 +29,12 @@ export const isEmpty = (params) => {
     return _isEmpty(params)
   }
 }
+
+/**
+ * 根据rem返回当前分辨率的真实px
+ * @param rem {Number} 要返回的rem
+ * @returns {Number} 当前px
+ */
+export const rem2px = (rem) => {
+  return window.innerWidth / 750 * rem
+}

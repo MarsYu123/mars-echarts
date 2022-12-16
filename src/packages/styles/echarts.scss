@@ -3,6 +3,14 @@
     overflow: hidden;
     @include wh(670 500);
     margin: 0 auto;
+    position: relative;
+    &-toolsTips {
+      @include wh(100% 100rem);
+      box-shadow: none !important;
+      border: none;
+      padding: 10rem !important;
+      background: rgba(243, 241, 221, 0.71) !important;
+    }
     &-tools-box{
       p{
         display: flex;

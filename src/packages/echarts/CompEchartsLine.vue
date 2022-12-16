@@ -28,7 +28,8 @@ export default {
     this.echart = echarts.init(this.$refs.echarts)
     let config = {
       grid: {
-        left: '20%'
+        left: '60',
+        right: '60'
       },
       legend: {
         show: true,
@@ -48,6 +49,12 @@ export default {
             text += `<p><span class="rect" style="background: ${i.color}"></span>${i.seriesName}:${i.axisValue} - ${initPercent(i.value)}</p>`
           })
           return `<div class="echarts-tools-box">${text}</div>`
+        },
+        position: () => {
+          return {
+            left: 0,
+            top: 0
+          }
         }
       },
       yAxis: {
@@ -71,19 +78,27 @@ export default {
             '2022-10-21',
             '2022-10-24',
             '2022-10-26'
-          ]
+          ],
+          axisLine: {
+            lineStyle: {
+              type: 'dashed'
+            }
+          },
+          axisTick: {
+            show: false
+          }
         },
         series: [
           {
             name: '基金1',
             type: 'line',
-            data: ['1', '0.9935406375', '','0.9510370004'],
+            data: ['-1', '0.9935406375', '','0.9510370004'],
             connectNulls: true,
             symbol: 'none'
           },{
             name: '基金2',
             type: 'line',
-            data: ['1', '0.3', '.2', '.6'],
+            data: ['1', '-0.3', '.2', '.6'],
             symbol: 'none'
           }
         ]
@@ -193,6 +208,7 @@ export default {
       this.echart.setOption(config)
     },
     handleTouchEnd () {
+      return
       console.log('-11')
       this.echart.dispatchAction({
         type: 'hideTip'

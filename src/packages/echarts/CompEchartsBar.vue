@@ -113,7 +113,11 @@ export default {
           {
             type: 'value',
             min: 0,
-            max: 100
+            max: 100,
+            axisPointer: {
+              show: true,
+              type: 'line'
+            }
           },
           {
             type: 'value',
@@ -139,7 +143,6 @@ export default {
             type: 'line',
             data: [0.4, 1.1, 1.2, 1, 1.02, 1.1, .25],
             yAxisIndex: 1,
-
           }
         ]
       }
