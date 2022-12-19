@@ -1,5 +1,5 @@
 <template>
-  <div class="comp-echarts">
+  <div class="comp-echarts bar">
     <div class="echarts" ref="echarts"/>
   </div>
 </template>

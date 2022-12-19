@@ -28,7 +28,11 @@ Vue.use(marsEcharts)
 <script>
 import {CompEchartsLine} from 'mars-echarts'
 export default {
-  components: {CompEchartsLine}
+  components: {
+    CompEchartsLine,
+    CompEchartsBar,
+    CompEchartsScatter
+  }
 }
 </script>
 ```

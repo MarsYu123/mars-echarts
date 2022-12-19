@@ -1,13 +1,15 @@
 import CompEchartsLine from './echarts/CompEchartsLine.vue'
 import CompEchartsBar from './echarts/CompEchartsBar.vue'
 import CompEchartsScatter from './echarts/CompEchartsScatter.vue'
+import CompEchartsPie from './echarts/CompEchartsPie.vue'
 
 import * as utils from './utils/util'
 
 const components = {
   CompEchartsLine,
   CompEchartsBar,
-  CompEchartsScatter
+  CompEchartsScatter,
+  CompEchartsPie
 }
 
 // 循环注册组件
@@ -30,5 +32,6 @@ export {
   utils,
   CompEchartsLine,
   CompEchartsBar,
-  CompEchartsScatter
+  CompEchartsScatter,
+  CompEchartsPie
 }

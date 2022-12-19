@@ -1,5 +1,5 @@
 <template>
-  <div class="comp-echarts">
+  <div class="comp-echarts line">
     <div class="echarts" ref="echarts" @touchend="handleTouchEnd"></div>
     <div class="dis-flex">
       <button @click="tabEchartsChange">切换</button>

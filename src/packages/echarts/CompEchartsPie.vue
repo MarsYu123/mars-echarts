@@ -1,12 +1,11 @@
 <template>
-  <div class="comp-echarts">
+  <div class="comp-echarts pie">
     <div class="echarts" ref="echatrs"/>
   </div>
 </template>
 
 <script>
 import echart from '../utils/echarts.config'
-
 export default {
   name: 'CompEchartsPie',
   data() {
@@ -82,9 +81,8 @@ export default {
           },
           label: {
             position: 'inside',
-            rotate: 60,
             formatter: (val) => {
-              return val.data.value + '%'
+              return `${val.data.value}%`
             }
           },
           name: 'level1',
