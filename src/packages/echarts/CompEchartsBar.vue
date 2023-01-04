@@ -6,7 +6,7 @@
 
 <script>
 import echarts from '../utils/echarts.config'
-import {initPercent} from '@/packages/utils/util'
+import {initPercent} from '../utils/util'
 import { merge } from 'lodash-es'
 
 export default {

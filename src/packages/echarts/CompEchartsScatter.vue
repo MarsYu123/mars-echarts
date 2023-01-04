@@ -14,45 +14,115 @@ export default {
     echart.setOption({
       title: [
         {
-          text: '象限一',
-          left: '10%',
-          top: '10%'
+          text: '攻守兼备型',
+          left: 60,
+          top: 35,
+          textStyle: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: '#666'
+          }
         },
         {
-          text: '象限二',
-          left: '60%',
-          top: '10%'
+          text: '进攻性',
+          right: 30,
+          top: 35,
+          textStyle: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: '#666'
+          }
         },
         {
-          text: '象限三',
-          left: '10%',
-          top: '60%'
+          text: '防守型',
+          left: 60,
+          top: 110,
+          textStyle: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: '#666'
+          }
         },
         {
-          text: '象限四',
-          left: '60%',
-          top: '60%'
+          text: '风格不明显',
+          right: 30,
+          top: 110,
+          textStyle: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: '#666'
+          }
         },
       ],
+      grid: {
+        show: true,
+        left: 50,
+        right: 20,
+        bottom: 80,
+        top: 10,
+        borderColor: '#999'
+      },
       xAxis: {
-        data: [-0.5, 0, 0.5,1,1.5],
-        axisTick: false
+        axisTick: false,
+        boundaryGap: false, // 坐标轴不留白，从原点开始
+        interval: .5,
+        min: -0.5,
+        max: 1.5,
+        axisLine: false,
+        axisLabel: {
+          color: '#333'
+        },
+        splitLine: false
       },
       yAxis: {
-        data: [-0.5, 0, 0.5,1,1.5],
-        axisTick: false
+        axisTick: false,
+        boundaryGap: false,
+        interval: .5,
+        min: -0.5,
+        max: 1.5,
+        axisLine: false,
+        axisLabel: {
+          color: '#333'
+        },
+        splitLine: false
       },
       series: [
         {
           data: [
-            [1.1,0.5],
-            [0.5,0.3],
-            [0.7,0.7],
-            [-0.1, -0.3]
+            [0.7, 0.1],
+            [0.5, 0.3],
+            [0.7, 0.7],
+            [-0.2, -0.5],
+            [1.2, -0.2]
           ],
           type: 'scatter',
-          symbolSize: function (value) {
-            return Math.abs((value[0] * value[1])) * 50
+          symbolSize: 40,
+          itemStyle: {
+            color: (params) => {
+              return ['#c11818', '#18f3c2', '#f3f314', '#2149ea', '#555'][params.dataIndex] || ['#f9e81f']
+            }
+          },
+          markLine: {
+            silent: true,
+            animation: false,
+            label: false,
+            lineStyle: {
+              color: '#999'
+            },
+            symbol: 'none',
+            data: [
+              {
+                xAxis: 0.5,
+                label: {
+                  show: false
+                }
+              },{
+                yAxis: 0.5,
+                label: {
+                  show: false
+                }
+              }
+            ]
           }
         }
       ]
@@ -63,6 +133,6 @@ export default {
 
 <style scoped lang="scss">
 .echarts{
-  @include wh(500);
+  @include wh(700 500);
 }
 </style>
