@@ -9,9 +9,23 @@ import echarts from '../utils/echarts.config'
 // import * as echarts from 'echarts'
 export default {
   name: 'CompEchartsScatter',
+  props: {
+    datum: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
+  data () {
+    return {
+      echart: null,
+      config: null
+    }
+  },
   mounted() {
-    const echart = echarts.init(this.$refs.echarts)
-    echart.setOption({
+    this.echart = echarts.init(this.$refs.echarts)
+    this.config = {
       title: [
         {
           text: '攻守兼备型',
@@ -88,15 +102,10 @@ export default {
       },
       series: [
         {
-          data: [
-            [0.7, 0.1],
-            [0.5, 0.3],
-            [0.7, 0.7],
-            [-0.2, -0.5],
-            [1.2, -0.2]
-          ],
           type: 'scatter',
-          symbolSize: 40,
+          symbolSize: function (val) {
+            return val[2]*8
+          },
           itemStyle: {
             color: (params) => {
               return ['#c11818', '#18f3c2', '#f3f314', '#2149ea', '#555'][params.dataIndex] || ['#f9e81f']
@@ -123,10 +132,15 @@ export default {
                 }
               }
             ]
-          }
+          },
+          data: []
         }
       ]
-    })
+    }
+    this.config.series[0].data = this.datum
+    if (this.datum.length) {
+      this.echart.setOption(this.config)
+    }
   }
 }
 </script>

@@ -54,13 +54,6 @@ export default {
             }
           }
         },
-        yAxis: {
-          axisLabel: {
-            formatter: (value) => {
-              return value.toFixed(2) + '%'
-            }
-          }
-        },
         xAxis: {
           boundaryGap: false // x轴留白策略，false则不留白从原点开始
         }
@@ -81,162 +74,86 @@ export default {
     initData () {
       if (this.type === 'line') {
         this.targetConfig = {
+          yAxis: {
+            scale: true,
+            splitNumber: 5,
+            axisLabel: {
+              formatter: (value) => {
+                return value.toFixed(2) + '%'
+              }
+            }
+          },
           xAxis: {
             type: 'category',
-            data: [],
             axisLine: {
-              lineStyle: {
-                type: 'dashed'
-              }
+              show: false
             },
             axisTick: {
               show: false
             },
             boundaryGap: true
-          },
-          series: []
-        }
-        const {
-          date,
-          mainData,
-          viceData
-        } = this.datum
-        this.targetConfig.xAxis.data = date
-        this.targetConfig.series = [
-          {
-            name: mainData.name,
-            type: 'line',
-            data: mainData.data,
-            connectNulls: true,
-            symbol: 'none'
-          },
-          {
-            name: viceData.name,
-            type: 'line',
-            data: viceData.data,
-            connectNulls: true,
-            symbol: 'none'
           }
-        ]
-
+        }
       } else if (this.type === 'stack') {
         // 堆叠图
         this.targetConfig = {
-          xAxis: {
-            type: 'category',
-            data: [
-              '2020-11-01',
-              '2020-11-02',
-              '2020-11-03',
-              '2020-11-04'
-            ]
+          grid: {
+            bottom: 56,
+            left: 40
           },
-          series: [{
-            type: 'line',
-            stack: 'Total',
-            areaStyle: {},
-            emphasis: {
-              focus: 'self'
-            },
-            data: [30, 60, 90, 10],
-            symbol: 'none'
-          },{
-            type: 'line',
-            stack: 'Total',
-            areaStyle: {},
-            emphasis: {
-              focus: 'self'
-            },
-            data: [40, 20, 3, 60],
-            symbol: 'none'
-          },{
-            type: 'line',
-            stack: 'Total',
-            areaStyle: {},
-            emphasis: {
-              focus: 'self'
-            },
-            data: [10, 10, 3, 10],
-            symbol: 'none'
-          },{
-            type: 'line',
-            stack: 'Total',
-            areaStyle: {},
-            emphasis: {
-              focus: 'self'
-            },
-            data: [20, 10, 4, 20],
-            symbol: 'none'
-          },]
-        }
-      } else if (this.type === 'visualMap') {
-        // 渐变图
-        this.targetConfig = {
-          xAxis: {
-            type: 'category',
-            data: [
-              '2022-10-20',
-              '2022-10-21',
-              '2022-10-24',
-              '2022-10-26'
-            ]
-          },
-          visualMap: {
-            top: 50,
-            right: 10,
-            pieces: [
-              {
-                gt: 0,
-                lte: 50,
-                color: '#93CE07'
-              },
-              {
-                gt: 50,
-                lte: 100,
-                color: '#FBDB0F'
-              },
-              {
-                gt: 100,
-                lte: 150,
-                color: '#FC7D02'
-              }
-            ],
-            outOfRange: {
-              color: '#999'
+          yAxis: {
+            max: 100,
+            min: 0,
+            interval: 20,
+            axisLabel: {
+              margin: 18
             }
           },
-          series: [{
-            type: 'line',
-            data: [20, 140, 80, 150]
-          }]
+          xAxis: {
+            axisLabel: {
+              rotate: 50,
+              fontSize: 10
+            },
+            axisTick: false
+          }
+        }
+      } else if (this.type === 'stackLine') {
+        // 堆叠折线图
+        this.targetConfig = {
+          grid: {
+            bottom: 56,
+            left: 40
+          },
+          yAxis: {
+            max: 100,
+            min: 0,
+            interval: 20,
+            axisLabel: {
+              margin: 18
+            }
+          },
+          xAxis: {
+            axisLabel: {
+              rotate: 50,
+              fontSize: 10
+            },
+            axisTick: false
+          }
         }
       }
-      this.echart.setOption(merge(this.config, this.targetConfig))
+      if (this.targetConfig.series) {
+        this.upDate()
+      }
     },
     upDate () {
-      const {
-        date,
-        mainData,
-        viceData
-      } = this.datum
-      this.targetConfig.xAxis.data = date
-      this.targetConfig.series = [
-        {
-          name: mainData.name,
-          type: 'line',
-          data: mainData.data,
-          connectNulls: true,
-          symbol: 'none'
-        },
-        {
-          name: viceData.name,
-          type: 'line',
-          data: viceData.data,
-          connectNulls: true,
-          symbol: 'none'
-        }
-      ]
-      this.echart.setOption(this.targetConfig)
+      this.echart.clear()
+      this.targetConfig.series = []
+      this.targetConfig.xAxis.data = []
+      this.config.series = []
+      this.config.xAxis.data = []
+      const { datum } = this
+      merge(this.targetConfig, datum)
+      this.echart.setOption(merge(this.config, this.targetConfig))
     }
   }
 }

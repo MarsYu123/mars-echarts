@@ -36,7 +36,7 @@ export const initPercent = (value, isPer= true) => {
 export const isEmpty = (params) => {
   if (typeof params === 'number') {
     return false
-  } else if (typeof String !== 'object') {
+  } else if (typeof params !== 'object') {
     return !params
   } else {
     return _isEmpty(params)
@@ -84,4 +84,37 @@ export const dateFormatter = (date, formatter) => {
     }
   }
   return formatter
+}
+
+export const dateArea = (type) => {
+  const newDate = new Date()
+  const newDateString = dateFormatter(new Date(), 'yyyy-MM-dd')
+  let [ y, m, d ] = [newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate()]
+  if (type === '3m') {
+    if (m < 4) {
+      m = 12 + (m - 3)
+      y = y - 1
+    } else {
+      m = m - 3
+    }
+    return [ `${y}-${m}-${d}`, newDateString ]
+  } else if (type === '6m') {
+    if (m < 7) {
+      m = 12 + (m - 6)
+      y = y - 1
+    } else {
+      m = m - 6
+    }
+    return [ `${y}-${m}-${d}`, newDateString ]
+  } else if (type.endsWith('y')) { // 往前推n年
+    const num = type.match(/\d/)[0]
+    return [ `${y - num}-${m}-${d}`, newDateString ]
+  } else if (type === 'all') {  // 由基金以来全部时间
+    return [ '1980-01-01', newDateString ]
+  } else if (type.startsWith('from')) { // 从哪年起
+    return [ type.split('_')[1], newDateString ]
+  } else if (type.startsWith('allYear')) { // 固定年份
+    y = type.split('_')[1]
+    return [ `${y}-01-01`, `${y}-12-31`]
+  }
 }

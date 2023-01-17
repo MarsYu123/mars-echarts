@@ -14,12 +14,25 @@ export default {
   props: {
     type: {
       type: String,
-      default: 'stack'
+      default: 'stack' // stack 堆叠图 double 双柱图
+    },
+    datum: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
+  },
+  data () {
+    return {
+      config: null,
+      targetConfig: null,
+      echarts: null
     }
   },
   mounted() {
-    const echart = echarts.init(this.$refs.echarts)
-    let config =  {
+    this.echarts = echarts.init(this.$refs.echarts)
+    this.config =  {
       grid: {
         top: '10%',
         bottom: '80'
@@ -53,9 +66,8 @@ export default {
         }
       }
     }
-    let targetConfig = {}
     if (this.type === 'stack') {
-      targetConfig = {
+      this.targetConfig = {
         xAxis: {
           type: 'category',
           data: ['2022-11-1', '2022-11-2', '2022-11-3', '2022-11-4', '2022-11-5'],
@@ -101,53 +113,54 @@ export default {
         ]
       }
     } else if (this.type === 'double') {
-      targetConfig = {
+      this.targetConfig = {
+        legend: {
+          show: false
+        },
+        grid: {
+          left: 60
+        },
         xAxis: {
           type: 'category',
-          data: ['2022-11-1', '2022-11-2', '2022-11-3', '2022-11-4', '2022-11-5'],
           axisPointer: {
             type: 'shadow'
+          },
+          axisLabel: {
+            padding: [ 0, 60, 0, 0 ],
+            margin: 10
           }
         },
         yAxis: [
           {
             type: 'value',
-            min: 0,
-            max: 100,
-            axisPointer: {
-              show: true,
-              type: 'line'
+            alignTicks: true,
+            // min: 0,
+            // max: 1000000,
+            // interval: 200000,
+            splitNumber: 6,
+            axisLabel: {
+              formatter: (value) => {
+                return value / 10000
+              }
             }
           },
           {
             type: 'value',
-            min: 0,
-            max: 1.25,
-            interval: 0.25,
-            axisPointer: {
-              show: true,
-              type: 'line'
-            }
+            alignTicks: true,
+            // min: 0,
+            // max: 1.25,
+            // interval: 0.25,
+            splitNumber: 6
           }
         ],
-        series: [
-          {
-            type: 'bar',
-            data: [50, 35, 50, 30, 88, 90, 80]
-          },
-          {
-            type: 'bar',
-            data: [20, 40, 60, 30, 90, 100, 20]
-          },
-          {
-            type: 'line',
-            data: [0.4, 1.1, 1.2, 1, 1.02, 1.1, .25],
-            yAxisIndex: 1,
-          }
-        ]
       }
     }
-    echart.setOption(merge(config, targetConfig))
+  },
+  methods: {
+    upDate () {
+      merge(this.targetConfig, this.datum)
+      this.echarts.setOption(merge(this.config, this.targetConfig))
+    }
   }
 }
 </script>
