@@ -1,164 +1,332 @@
 <template>
-  <div class="comp-echarts line">
-    <div class="echarts" ref="echarts" @touchend="handleTouchEnd"></div>
-  </div>
+  <div
+    v-if="!isEmpty"
+    ref="echartsRef"
+    class="comp-echarts echarts"
+    :class="type"
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd" />
+  <comp-echarts-empty v-else :type="type"/>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { merge } from 'lodash-es'
-import echarts from '../utils/echarts.config'
-import {initPercent} from '../utils/util'
-export default {
-  name: 'CompEchartsLine',
-  props: {
-    type: {
-      type: String,
-      default: 'line'
+import echartsPlugin from '../utils/echarts.config'
+import { initPercent, rem2px } from '../utils/util'
+import { onMounted, ref } from 'vue'
+import type { EChartsType } from 'echarts/core'
+import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
+import { ECOption } from '../utils/echarts.config'
+
+const echartsRef = ref<HTMLElement>()
+const props = withDefaults(defineProps<{
+    type: string
+    datum: ECOption
+    isPer?: boolean
+  }>(),
+  {
+    type: 'stack',
+    isPer: true
+  })
+let targetConfig: ECOption = {}
+let echarts: EChartsType
+const config: ECOption = {
+  grid: {
+    left: 0,
+    right: rem2px(.04),
+    top: rem2px(.2),
+    bottom: 0,
+    show: true,
+    borderColor: 'rgba(229,229,229,0.5)',
+    borderWidth: 0.5,
+    containLabel: true
+  },
+  tooltip: {
+    show: true,
+    trigger: 'axis',
+    confine: true,
+    alwaysShowContent: false,
+    hideDelay: 200,
+    className: 'echarts-toolsTips',
+    renderMode: 'html',
+    borderWidth: 0,
+    textStyle: {
+      color: '#fff',
+      fontSize: rem2px(.2),
+      lineHeight: rem2px(.28)
     },
-    datum: {
-      type: Object,
-      default: () => {
-        return {}
+    formatter: (value) => {
+      let text = ''
+      if (Array.isArray(value)) {
+        let time = value[0].name
+        value.forEach((i) => {
+          text += `<p><span class="rect" style="background: ${i.color}"></span>${initPercent(i.value as string, props.isPer, true)}</p>`
+        })
+        return `
+        <div class="echarts-tools-box">
+          <p>${time}</p>
+          ${text}
+        </div>
+      `
+      }
+    },
+    position: (pos, params, dom, rect, size) => {
+      let left = pos[0]
+      if ((size.viewSize[0] - size.contentSize[0]) < pos[0] - 20) {
+        left = pos[0] - size.contentSize[0] - 10
+      }
+      return {
+        top: 20,
+        left
       }
     }
   },
-  data () {
-    return {
-      echart: null,
-      config: {
-        grid: {
-          left: 50,
-          right: 20,
-          top: 20,
-          bottom: 20
+  xAxis: {
+    data: [],
+    axisLine: {
+      show: false
+    },
+    boundaryGap: false, // x轴留白策略，false则不留白从原点开始
+    axisLabel: {
+      color: '#222A41',
+      fontSize: rem2px(.2)
+    },
+    splitLine: {
+      show: true,
+      lineStyle: {
+        color: '#E5E5E5',
+        width: 0.5,
+        opacity: .5
+      }
+    }
+  },
+  yAxis: {
+    splitNumber: 4,
+    type: 'value',
+    splitLine: {
+      show: true,
+      lineStyle: {
+        color: '#E5E5E5',
+        width: 0.5,
+        opacity: .5
+      }
+    },
+    axisLabel: {
+      color: '#222A41',
+      padding: [ 0, 0, rem2px(-.16), 0 ],
+      verticalAlign: 'bottom',
+      height: rem2px(.3),
+      fontSize: rem2px(.2),
+      margin: rem2px(.1),
+      formatter: (value: string) => {
+        return props.isPer? value + '%' : value
+      }
+    }
+  },
+  series: []
+}
+
+const createdConfig = () => {
+  // 净值走势图
+  if (props.type === 'line') {
+    targetConfig = {
+      yAxis: {
+        minInterval: 1,
+        scale: true,
+        splitNumber: 4,
+        fontSize: rem2px(.2),
+        color: '#222A41'
+      },
+      xAxis: {
+        type: 'category',
+        axisLine: {
+          show: false
         },
-        tooltip: {
-          show: true,
-          trigger: 'axis',
-          confine: true,
-          alwaysShowContent: false,
-          hideDelay: 200,
-          className: 'echarts-toolsTips',
-          renderMode: 'html',
-          formatter: (value) => {
-            let text = ''
-            value.forEach((i) => {
-              text += `<p><span class="rect" style="background: ${i.color}"></span>${i.seriesName}:${i.axisValue} - ${initPercent(i.value)}</p>`
-            })
-            return `<div class="echarts-tools-box">${text}</div>`
+        axisTick: {
+          show: false
+        },
+        boundaryGap: false,
+        fontSize: rem2px(.2),
+        color: '#222A41'
+      }
+    }
+  } else if (props.type === 'normal') {
+    // 常规折线图
+    targetConfig = {
+      grid: {
+        bottom: rem2px(-.6)
+      },
+      yAxis: {
+        scale: true,
+        splitNumber: 4
+      },
+      xAxis: {
+        type: 'category',
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          rotate: 45,
+          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
+          formatter: (value, index) => {
+            if (index === 0 && config.xAxis.data?.length > 1) {
+              return `{a|${value}}`
+            } else {
+              return value
+            }
           },
-          position: () => {
-            return {
-              left: 0,
-              top: 0
+          rich: {
+            a: {
+              padding: [ rem2px(.7), rem2px(-.36), 0, 0 ],
+              fontSize: rem2px(.2),
+              color: '#222A41'
             }
           }
         },
-        xAxis: {
-          boundaryGap: false // x轴留白策略，false则不留白从原点开始
+        boundaryGap: false,
+        fontSize: rem2px(.2),
+        color: '#222A41'
+      }
+    }
+  } else if (props.type === 'stack') {
+    // 堆叠图
+    targetConfig = {
+      grid: {
+        bottom: rem2px(-.6)
+      },
+      yAxis: {
+        max: 100,
+        min: 0,
+        interval: 20,
+        axisLabel: {
+          margin: rem2px(.08)
         }
       },
-      targetConfig: {}
+      xAxis: {
+        axisLabel: {
+          rotate: 45,
+          fontSize: 10,
+          showMinLabel: true,
+          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
+          formatter: (value, index) => {
+            if (index === 0) {
+              return `{a|${value}}`
+            } else {
+              return value
+            }
+          },
+          rich: {
+            a: {
+              padding: [ rem2px(.5), rem2px(-.3), 0, 0 ],
+              fontSize: rem2px(.2),
+              color: '#222A41'
+            }
+          }
+        },
+        axisTick: {
+          show: false
+        }
+      }
     }
-  },
-  mounted() {
-    this.echart = echarts.init(this.$refs.echarts)
-    this.initData()
-  },
-  methods: {
-    handleTouchEnd () {
-      this.echart.dispatchAction({
-        type: 'hideTip'
-      })
-    },
-    initData () {
-      if (this.type === 'line') {
-        this.targetConfig = {
-          yAxis: {
-            scale: true,
-            splitNumber: 5,
-            axisLabel: {
-              formatter: (value) => {
-                return value.toFixed(2) + '%'
-              }
-            }
-          },
-          xAxis: {
-            type: 'category',
-            axisLine: {
-              show: false
-            },
-            axisTick: {
-              show: false
-            },
-            boundaryGap: true
+  } else if (props.type === 'stackLine') {
+    // 堆叠折线图
+    targetConfig = {
+      grid: {
+        bottom: rem2px(-.6)
+      },
+      yAxis: {
+        axisLabel: {
+          margin: rem2px(.08),
+          formatter: (value: number) => {
+            return value.toFixed(2)
           }
         }
-      } else if (this.type === 'stack') {
-        // 堆叠图
-        this.targetConfig = {
-          grid: {
-            bottom: 56,
-            left: 40
-          },
-          yAxis: {
-            max: 100,
-            min: 0,
-            interval: 20,
-            axisLabel: {
-              margin: 18
+      },
+      xAxis: {
+        axisLabel: {
+          rotate: 45,
+          fontSize: 10,
+          showMinLabel: true,
+          showMaxLabel: true,
+          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
+          formatter: (value: string, index: number) => {
+            if (index === 0) {
+              return `{a|${value}}`
+            } else {
+              return value
             }
           },
-          xAxis: {
-            axisLabel: {
-              rotate: 50,
-              fontSize: 10
-            },
-            axisTick: false
-          }
-        }
-      } else if (this.type === 'stackLine') {
-        // 堆叠折线图
-        this.targetConfig = {
-          grid: {
-            bottom: 56,
-            left: 40
-          },
-          yAxis: {
-            max: 100,
-            min: 0,
-            interval: 20,
-            axisLabel: {
-              margin: 18
+          rich: {
+            a: {
+              padding: [ rem2px(.5), rem2px(-.3), 0, 0 ],
+              fontSize: rem2px(.2),
+              color: '#222A41'
             }
-          },
-          xAxis: {
-            axisLabel: {
-              rotate: 50,
-              fontSize: 10
-            },
-            axisTick: false
           }
+        },
+        axisTick: {
+          show: false
         }
       }
-      if (this.targetConfig.series) {
-        this.upDate()
-      }
-    },
-    upDate () {
-      this.echart.clear()
-      this.targetConfig.series = []
-      this.targetConfig.xAxis.data = []
-      this.config.series = []
-      this.config.xAxis.data = []
-      const { datum } = this
-      merge(this.targetConfig, datum)
-      this.echart.setOption(merge(this.config, this.targetConfig))
     }
   }
 }
+
+const isEmpty = ref(false)
+const upDate = () => {
+  if (!props.datum.series) {
+    isEmpty.value = true
+    return
+  }
+  if (props.datum.xAxis.data.length < 2 && props.type !== 'line') {
+    targetConfig.grid.bottom = 0
+  }
+  echarts.clear()
+  targetConfig.series = []
+  targetConfig.xAxis.data = []
+  config.series?.splice(0)
+  config.xAxis.data.splice(0)
+  merge(targetConfig, props.datum)
+  echarts.setOption(merge(config, targetConfig))
+}
+
+const handleTouchEnd = () => {
+  echarts.dispatchAction({
+    type: 'hideTip'
+  })
+  echarts.setOption({
+    xAxis: {
+      axisPointer: {
+        status: 'hide'
+      }
+    }
+  })
+}
+const handleTouchStart = () => {
+  echarts.setOption({
+    xAxis: {
+      axisPointer: {
+        status: 'show'
+      }
+    }
+  })
+}
+
+onMounted(() => {
+  echarts = echartsPlugin.init(echartsRef.value)
+  // 执行方法
+  createdConfig()
+})
+
+defineExpose({
+  upDate
+})
 </script>
 
 <style scoped lang="scss">
-@import "../styles/echarts.scss";
+@import "../styles/echarts";
+
 </style>

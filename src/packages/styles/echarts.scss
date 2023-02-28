@@ -1,25 +1,28 @@
-.comp-echarts{
-  ::v-deep .echarts{
-    overflow: hidden;
-    @include wh(700 500);
-    margin: 0 auto;
-    position: relative;
-    &-toolsTips {
-      @include wh(100% 100rem);
-      box-shadow: none !important;
-      border: none;
-      padding: 10rem !important;
-      background: rgba(243, 241, 221, 0.71) !important;
-    }
-    &-tools-box{
+
+.echarts{
+  overflow: hidden;
+  @include wh(100% 3);
+  margin: 0 auto;
+  position: relative;
+  &.stack,&.double,&.normal,&.stackLine{
+    height: 3.53rem;
+  }
+  :deep(.echarts-toolsTips) {
+    display: none;
+    box-shadow: none !important;
+    border: none;
+    padding: .04rem .08rem !important;
+    background: rgba(0,0,0,.5) !important;
+    border-radius: .04rem !important;
+    .echarts-tools-box{
       p{
         display: flex;
         align-items: center;
       }
       .rect {
-        @include wh(10);
-        border-radius: 50%;
-        margin-right: 10rem;
+        @include wh(.16);
+        border-radius: .04rem;
+        margin-right: .14rem;
       }
     }
   }

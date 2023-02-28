@@ -1,41 +1,46 @@
-# mars-echarts
-## 用于项目中频繁使用的金融行业类图表组件，使用插件为echarts，大版本为5.xx
+# vue3-project
 
-## 引入项目
+This template should help get you started developing with Vue 3 in Vite.
 
-    npm i mars-echarts
-    or
-    yarn add mars-echarts
+## Recommended IDE Setup
 
-## 使用项目
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-```vue
-// 全局引用
-// main.js
-import marsEcharts from 'mars-echarts'
+## Type Support for `.vue` Imports in TS
 
-Vue.use(marsEcharts)
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
 
-<template>
-  <CompEchartsLine type="xxx" data='xxx'/>
-</template>
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
 
-// 按需引入
-<template>
-  <CompEchartsLine type="xxx" data="xxx"/>
-</template>
+1. Disable the built-in TypeScript Extension
+    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
-<script>
-import {CompEchartsLine} from 'mars-echarts'
-export default {
-  components: {
-    CompEchartsLine,
-    CompEchartsBar,
-    CompEchartsScatter
-  }
-}
-</script>
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
 ```
 
-## 项目介绍
-此项目主要为本人所在项目使用为主，暂不考虑通用性，并且写法偏向个人。主要暴露一些通用组件，如``CompEchartsBar``等，还有一些通用方法``utils``。具体可以从代码中了解。
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```

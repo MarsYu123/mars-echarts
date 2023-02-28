@@ -1,170 +1,211 @@
 <template>
-  <div class="comp-echarts bar">
-    <div class="echarts" ref="echarts"/>
-  </div>
+  <div
+    v-if="!isEmpty"
+    ref="echartsRef" 
+    class="echarts comp-echarts bar" 
+    :class="type"
+    @touchend="handleTouchEnd"
+    @touchstart="handleTouchStart"
+  />
+  <comp-echarts-empty v-else :type="type"/>
 </template>
 
-<script>
-import echarts from '../utils/echarts.config'
-import {initPercent} from '../utils/util'
+<script setup lang="ts">
+import echartsPlugin, { ECOption } from '../utils/echarts.config'
+import { onMounted, ref } from 'vue'
+import { initPercent, rem2px } from '../utils/util.js'
 import { merge } from 'lodash-es'
+import { EChartsType } from 'echarts/core'
+import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
-export default {
-  name: 'CompEchartsBar',
-  props: {
-    type: {
-      type: String,
-      default: 'stack' // stack 堆叠图 double 双柱图
+const echartsRef = ref<HTMLElement>()
+const props = withDefaults(defineProps<{
+    type: string,
+    datum: object
+  }>(),
+  {
+    type: 'stack'
+  })
+
+let targetConfig: ECOption = {}
+let echarts: EChartsType
+
+const config: ECOption = {
+  grid: {
+    left: 0,
+    right: rem2px(.04),
+    top: 0,
+    bottom: 0,
+    borderColor: 'rgba(229,229,229,0.5)',
+    borderWidth: 0.5,
+    containLabel: false
+  },
+  xAxis: {
+    axisLine: {
+      show: false
     },
-    datum: {
-      type: Object,
-      default: () => {
-        return {}
-      }
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      interval: 0,
+      rotate: 45,
+      color: '#222A41',
+      fontSize: rem2px(.2)
     }
   },
-  data () {
-    return {
-      config: null,
-      targetConfig: null,
-      echarts: null
+  legend: {
+    show: false
+  },
+  yAxis: {
+    splitLine: {
+      show: true,
+      lineStyle: {
+        color: 'rgba(229,229,229,0.5)'
+      }
+    },
+    axisLabel: {
+      color: '#222A41',
+      fontSize: rem2px(.2)
     }
   },
-  mounted() {
-    this.echarts = echarts.init(this.$refs.echarts)
-    this.config =  {
-      grid: {
-        top: '10%',
-        bottom: '80'
-      },
-      xAxis: {
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          interval: 0,
-          align: 'center',
-          rotate: 45,
-          margin: 30
-        }
-      },
-      legend: {
-        show: true,
-        icon: 'roundRect'
-      },
-      yAxis: {},
-      tooltip: {
-        show: true,
-        trigger: 'axis',
-        confine: true,
-        formatter: (value) => {
-          let text = ''
-          value.forEach((i) => {
-            text += `<p><span class="rect" style="background: ${i.color}"></span>${i.seriesName}:${i.axisValue} - ${initPercent(i.value)}</p>`
-          })
-          return `<div class="echarts-tools-box">${text}</div>`
-        }
+  series: [],
+  tooltip: {
+    show: true,
+    trigger: 'axis',
+    confine: true,
+    alwaysShowContent: false,
+    className: 'echarts-toolsTips',
+    borderWidth: 0,
+    textStyle: {
+      color: '#fff',
+      fontSize: rem2px(.2),
+      lineHeight: rem2px(.28)
+    },
+    formatter: (value) => {
+      let text = ''
+      if (Array.isArray(value)) {
+        value.forEach((i) => {
+          const unit = config.series[i.seriesIndex].valType || '%'
+          text += `<p><span class="rect" style="background: ${i.color}"></span>${initPercent(i.value as string, false)}${unit}</p>`
+        })
+        return `
+        <div class="echarts-tools-box">
+          <p>${value[0].name}</p>
+          ${text}
+        </div>
+      ` 
       }
-    }
-    if (this.type === 'stack') {
-      this.targetConfig = {
-        xAxis: {
-          type: 'category',
-          data: ['2022-11-1', '2022-11-2', '2022-11-3', '2022-11-4', '2022-11-5'],
-
-        },
-        series: [
-          {
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [10, 20, 20, 10, 5],
-            barCategoryGap: 0
-          },
-          {
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [70, 40, 70, 10, 40],
-            barCategoryGap: 0
-          },
-          {
-            type: 'bar',
-            stack: 'total',
-            label: {
-              show: true
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: [20, 40, 10, 80, 55],
-            barCategoryGap: 0
-          }
-        ]
+    },
+    position: (pos, params, dom, rect, size) => {
+      let left = pos[0]
+      if ((size.viewSize[0] - size.contentSize[0]) < pos[0] - 20) {
+        left = pos[0] - size.contentSize[0] - 10
       }
-    } else if (this.type === 'double') {
-      this.targetConfig = {
-        legend: {
-          show: false
-        },
-        grid: {
-          left: 60
-        },
-        xAxis: {
-          type: 'category',
-          axisPointer: {
-            type: 'shadow'
-          },
-          axisLabel: {
-            padding: [ 0, 60, 0, 0 ],
-            margin: 10
-          }
-        },
-        yAxis: [
-          {
-            type: 'value',
-            alignTicks: true,
-            // min: 0,
-            // max: 1000000,
-            // interval: 200000,
-            splitNumber: 6,
-            axisLabel: {
-              formatter: (value) => {
-                return value / 10000
-              }
-            }
-          },
-          {
-            type: 'value',
-            alignTicks: true,
-            // min: 0,
-            // max: 1.25,
-            // interval: 0.25,
-            splitNumber: 6
-          }
-        ],
+      return {
+        top: 20,
+        left
       }
-    }
-  },
-  methods: {
-    upDate () {
-      merge(this.targetConfig, this.datum)
-      this.echarts.setOption(merge(this.config, this.targetConfig))
     }
   }
 }
+
+// 判断类型
+if (props.type === 'stack') {
+  targetConfig = {
+    grid: {
+      left: rem2px(.5)
+    },
+    xAxis: {
+      type: 'category',
+      data: []
+    },
+    series: []
+  }
+} else if (props.type === 'double') {
+  targetConfig = {
+    grid: {
+      top: rem2px(.2),
+      left: rem2px(1),
+      right: rem2px(.5),
+      bottom: rem2px(1)
+    },
+    xAxis: {
+      type: 'category',
+      axisPointer: {
+        type: 'shadow'
+      },
+      axisLabel: {
+        margin: rem2px(.2),
+        padding: [ 0, rem2px(-.1), 10, 0 ]
+      }
+    },
+    yAxis: [
+      {
+        type: 'value',
+        alignTicks: true,
+        splitNumber: 6,
+        axisLabel: {
+          formatter: (value: number) => {
+            return value / 10000
+          }
+        }
+      },
+      {
+        type: 'value',
+        alignTicks: true,
+        splitNumber: 6
+      }
+    ],
+    series: []
+  }
+}
+const handleTouchEnd = () => {
+  echarts.dispatchAction({
+    type: 'hideTip'
+  })
+  echarts.setOption({
+    xAxis: {
+      axisPointer: {
+        status: 'hide'
+      }
+    }
+  })
+}
+const handleTouchStart = () => {
+  echarts.setOption({
+    xAxis: {
+      axisPointer: {
+        status: 'show'
+      }
+    }
+  })
+}
+
+const isEmpty = ref(false)
+const upDate = () => {
+  if (!props.datum.series) {
+    isEmpty.value = true
+    return
+  }
+  echarts.clear()
+  targetConfig.series = []
+  targetConfig.xAxis.data = []
+  config.series?.splice(0)
+  config.xAxis.data = []
+  merge(targetConfig, props.datum)
+  echarts.setOption(merge(config, targetConfig))
+}
+onMounted(() => {
+  echarts = echartsPlugin.init(echartsRef.value)
+})
+// 暴露给父元素
+defineExpose({
+  upDate
+})
+
 </script>
 
 <style scoped lang="scss">
-@import "../styles/echarts.scss";
+@import "../styles/echarts";
 </style>
