@@ -1,0 +1,15 @@
+$w: 750;
+*{
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+html{
+  font-size: calc(100/$w*1vw*100);
+  @media (min-width: 1000px) {
+    font-size: 50px;
+  }
+}
+#app{
+  width: 7.5rem;
+}
