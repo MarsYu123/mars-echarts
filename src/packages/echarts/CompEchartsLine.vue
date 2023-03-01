@@ -11,26 +11,25 @@
 
 <script lang="ts" setup>
 import { merge } from 'lodash-es'
-import echartsPlugin from '../utils/echarts.config'
+import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { initPercent, rem2px } from '../utils/util'
 import { onMounted, ref } from 'vue'
 import type { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
-import { ECOption } from '../utils/echarts.config'
 
 const echartsRef = ref<HTMLElement>()
 const props = withDefaults(defineProps<{
     type: string
-    datum: ECOption
+    datum: EChartsOption
     isPer?: boolean
   }>(),
   {
     type: 'stack',
     isPer: true
   })
-let targetConfig: ECOption = {}
+let targetConfig = {} as EChartsOption
 let echarts: EChartsType
-const config: ECOption = {
+const config: EChartsOption = {
   grid: {
     left: 0,
     right: rem2px(.04),
@@ -81,7 +80,8 @@ const config: ECOption = {
       }
     }
   },
-  xAxis: {
+  xAxis: [ {
+    type: 'category',
     data: [],
     axisLine: {
       show: false
@@ -99,8 +99,8 @@ const config: ECOption = {
         opacity: .5
       }
     }
-  },
-  yAxis: {
+  } ],
+  yAxis: [ {
     splitNumber: 4,
     type: 'value',
     splitLine: {
@@ -118,11 +118,11 @@ const config: ECOption = {
       height: rem2px(.3),
       fontSize: rem2px(.2),
       margin: rem2px(.1),
-      formatter: (value: string) => {
-        return props.isPer? value + '%' : value
+      formatter: (value: number) => {
+        return props.isPer? value + '%' : value.toString()
       }
     }
-  },
+  } ],
   series: []
 }
 
@@ -130,14 +130,12 @@ const createdConfig = () => {
   // 净值走势图
   if (props.type === 'line') {
     targetConfig = {
-      yAxis: {
+      yAxis: [ {
         minInterval: 1,
         scale: true,
-        splitNumber: 4,
-        fontSize: rem2px(.2),
-        color: '#222A41'
-      },
-      xAxis: {
+        splitNumber: 4
+      } ],
+      xAxis: [ {
         type: 'category',
         axisLine: {
           show: false
@@ -145,10 +143,8 @@ const createdConfig = () => {
         axisTick: {
           show: false
         },
-        boundaryGap: false,
-        fontSize: rem2px(.2),
-        color: '#222A41'
-      }
+        boundaryGap: false
+      } ]
     }
   } else if (props.type === 'normal') {
     // 常规折线图
@@ -156,11 +152,11 @@ const createdConfig = () => {
       grid: {
         bottom: rem2px(-.6)
       },
-      yAxis: {
+      yAxis: [ {
         scale: true,
         splitNumber: 4
-      },
-      xAxis: {
+      } ],
+      xAxis: [ {
         type: 'category',
         axisLine: {
           show: false
@@ -171,8 +167,8 @@ const createdConfig = () => {
         axisLabel: {
           rotate: 45,
           padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
-          formatter: (value, index) => {
-            if (index === 0 && config.xAxis.data?.length > 1) {
+          formatter: (value: string, index: number) => {
+            if (index === 0 && config.xAxis[0].data?.length > 1) {
               return `{a|${value}}`
             } else {
               return value
@@ -186,10 +182,8 @@ const createdConfig = () => {
             }
           }
         },
-        boundaryGap: false,
-        fontSize: rem2px(.2),
-        color: '#222A41'
-      }
+        boundaryGap: false
+      } ]
     }
   } else if (props.type === 'stack') {
     // 堆叠图
@@ -197,21 +191,21 @@ const createdConfig = () => {
       grid: {
         bottom: rem2px(-.6)
       },
-      yAxis: {
+      yAxis: [ {
         max: 100,
         min: 0,
         interval: 20,
         axisLabel: {
           margin: rem2px(.08)
         }
-      },
-      xAxis: {
+      } ],
+      xAxis: [ {
         axisLabel: {
           rotate: 45,
           fontSize: 10,
           showMinLabel: true,
           padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
-          formatter: (value, index) => {
+          formatter: (value: string, index: number) => {
             if (index === 0) {
               return `{a|${value}}`
             } else {
@@ -229,7 +223,7 @@ const createdConfig = () => {
         axisTick: {
           show: false
         }
-      }
+      } ]
     }
   } else if (props.type === 'stackLine') {
     // 堆叠折线图
@@ -237,15 +231,15 @@ const createdConfig = () => {
       grid: {
         bottom: rem2px(-.6)
       },
-      yAxis: {
+      yAxis: [ {
         axisLabel: {
           margin: rem2px(.08),
           formatter: (value: number) => {
             return value.toFixed(2)
           }
         }
-      },
-      xAxis: {
+      } ],
+      xAxis: [ {
         axisLabel: {
           rotate: 45,
           fontSize: 10,
@@ -270,7 +264,7 @@ const createdConfig = () => {
         axisTick: {
           show: false
         }
-      }
+      } ]
     }
   }
 }
@@ -281,14 +275,18 @@ const upDate = () => {
     isEmpty.value = true
     return
   }
-  if (props.datum.xAxis.data.length < 2 && props.type !== 'line') {
-    targetConfig.grid.bottom = 0
+  if (Array.isArray(props.datum.xAxis)){
+    if (props.datum.xAxis[0].data.length < 2 && props.type !== 'line') {
+      targetConfig.grid.bottom = 0
+    } 
   }
   echarts.clear()
   targetConfig.series = []
-  targetConfig.xAxis.data = []
-  config.series?.splice(0)
-  config.xAxis.data.splice(0)
+  targetConfig.xAxis[0].data = []
+  if (Array.isArray(config.series)) {
+    config.series?.splice(0)
+  }
+  config.xAxis[0].data.splice(0)
   merge(targetConfig, props.datum)
   echarts.setOption(merge(config, targetConfig))
 }

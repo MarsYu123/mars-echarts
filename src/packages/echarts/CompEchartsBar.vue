@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import echartsPlugin, { ECOption } from '../utils/echarts.config'
+import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { initPercent, rem2px } from '../utils/util.js'
 import { merge } from 'lodash-es'
@@ -21,16 +21,16 @@ import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 const echartsRef = ref<HTMLElement>()
 const props = withDefaults(defineProps<{
     type: string,
-    datum: object
+    datum: EChartsOption
   }>(),
   {
     type: 'stack'
   })
 
-let targetConfig: ECOption = {}
+let targetConfig = {} as EChartsOption
 let echarts: EChartsType
 
-const config: ECOption = {
+const config: EChartsOption = {
   grid: {
     left: 0,
     right: rem2px(.04),
@@ -40,7 +40,7 @@ const config: ECOption = {
     borderWidth: 0.5,
     containLabel: false
   },
-  xAxis: {
+  xAxis: [ {
     axisLine: {
       show: false
     },
@@ -53,11 +53,11 @@ const config: ECOption = {
       color: '#222A41',
       fontSize: rem2px(.2)
     }
-  },
+  } ],
   legend: {
     show: false
   },
-  yAxis: {
+  yAxis: [ {
     splitLine: {
       show: true,
       lineStyle: {
@@ -68,7 +68,7 @@ const config: ECOption = {
       color: '#222A41',
       fontSize: rem2px(.2)
     }
-  },
+  } ],
   series: [],
   tooltip: {
     show: true,
@@ -86,7 +86,7 @@ const config: ECOption = {
       let text = ''
       if (Array.isArray(value)) {
         value.forEach((i) => {
-          const unit = config.series[i.seriesIndex].valType || '%'
+          const unit = (config.series[i.seriesIndex as keyof typeof config.series] as any).valType || '%'
           text += `<p><span class="rect" style="background: ${i.color}"></span>${initPercent(i.value as string, false)}${unit}</p>`
         })
         return `
@@ -116,10 +116,9 @@ if (props.type === 'stack') {
     grid: {
       left: rem2px(.5)
     },
-    xAxis: {
-      type: 'category',
-      data: []
-    },
+    xAxis: [ {
+      type: 'category'
+    } ],
     series: []
   }
 } else if (props.type === 'double') {
@@ -130,7 +129,7 @@ if (props.type === 'stack') {
       right: rem2px(.5),
       bottom: rem2px(1)
     },
-    xAxis: {
+    xAxis: [ {
       type: 'category',
       axisPointer: {
         type: 'shadow'
@@ -139,7 +138,7 @@ if (props.type === 'stack') {
         margin: rem2px(.2),
         padding: [ 0, rem2px(-.1), 10, 0 ]
       }
-    },
+    } ],
     yAxis: [
       {
         type: 'value',
@@ -147,7 +146,7 @@ if (props.type === 'stack') {
         splitNumber: 6,
         axisLabel: {
           formatter: (value: number) => {
-            return value / 10000
+            return value.toString()
           }
         }
       },
@@ -190,9 +189,15 @@ const upDate = () => {
   }
   echarts.clear()
   targetConfig.series = []
-  targetConfig.xAxis.data = []
-  config.series?.splice(0)
-  config.xAxis.data = []
+  if (Array.isArray(targetConfig.xAxis)) {
+    targetConfig.xAxis[0].data = []
+  }
+  if (Array.isArray(config.series)) {
+    config.series?.splice(0)
+  }
+  if (Array.isArray(config.xAxis)) {
+    config.xAxis[0].data = [] 
+  }
   merge(targetConfig, props.datum)
   echarts.setOption(merge(config, targetConfig))
 }

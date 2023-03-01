@@ -19,12 +19,6 @@ const install = function (App: App) {
   }
 }
 
-
-// 使用标签引入
-if (typeof window !== 'undefined' && window.Vue) {
-  install(window.Vue)
-}
-
 // 全局引入暴露
 export default {
   install

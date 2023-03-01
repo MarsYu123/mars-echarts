@@ -14,12 +14,15 @@ import {
   TitleComponentOption,
   TooltipComponentOption,
   GridComponentOption,
-  MarkLineComponentOption
+  MarkLineComponentOption,
+  AxisPointerComponentOption
 } from 'echarts/components'
 // 标签自动布局，全局过渡动画等特性
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from 'echarts/renderers'
+import { ValueAxisBaseOption, CategoryAxisBaseOption } from 'echarts/types/src/coord/axisCommonTypes'
+
 
 // 通过 ComposeOption 来组合出一个只有必须组件和图表的 Option 类型
 export type ECOption = echarts.ComposeOption<
@@ -31,7 +34,13 @@ export type ECOption = echarts.ComposeOption<
   | ScatterSeriesOption
   | PieSeriesOption
   | MarkLineComponentOption
+  | AxisPointerComponentOption
 >;
+
+export type EChartsOption = ECOption & {
+  xAxis?: CategoryAxisBaseOption[],
+  yAxis?: ValueAxisBaseOption[]
+}
 
 // 注册必须的组件
 echarts.use([

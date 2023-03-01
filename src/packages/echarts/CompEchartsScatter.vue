@@ -18,20 +18,19 @@
 </template>
 
 <script setup lang="ts">
-import echartsPlugin from '../utils/echarts.config'
+import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { EChartsType } from 'echarts/core'
 import { rem2px } from '../utils/util'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
-import { IConfig } from '@type/base'
 
 const props = defineProps<{
   datum: []
 }>()
 
 const echartsRef = ref<HTMLElement>()
-const config: IConfig = {
+const config: EChartsOption = {
   title: [
     {
       text: '攻守兼备型',
@@ -82,7 +81,7 @@ const config: IConfig = {
     top: Math.floor(rem2px(.2)),
     borderColor: 'rgba(229,229,229,0.5)'
   },
-  xAxis: {
+  xAxis: [ {
     axisTick: {
       show: false
     },
@@ -90,17 +89,16 @@ const config: IConfig = {
       show: false
     },
     boundaryGap: false, // 坐标轴不留白，从原点开始
-    interval: .5,
     min: -0.5,
     max: 1.5,
     axisLabel: {
       color: '#222A41',
       fontSize: rem2px(.2),
       margin: rem2px(.1),
-      formatter: (value, index) => {
+      formatter: (value: string, index: number) => {
         if (index === 0) {
           return `{a|${value}}`
-        } else if (value === 1.5) {
+        } else if (+value === 1.5) {
           return `{b|${value}}`
         } else {
           return value
@@ -117,23 +115,30 @@ const config: IConfig = {
         }
       }
     },
-    splitLine: false
-  },
-  yAxis: {
-    axisTick: false,
-    boundaryGap: false,
+    splitLine: {
+      show: false
+    }
+  } ],
+  yAxis: [ {
+    axisTick: {
+      show: false
+    },
     interval: .5,
     min: -0.5,
     max: 1.5,
-    axisLine: false,
+    axisLine: {
+      show: false
+    },
     axisLabel: {
       color: '#222A41',
       fontSize: rem2px(.2),
       margin: rem2px(.08)
     },
-    splitLine: false
-  },
-  series: {
+    splitLine: {
+      show: false
+    }
+  } ],
+  series: [ {
     type: 'scatter',
     emphasis: {
       scale: 1.1
@@ -146,21 +151,27 @@ const config: IConfig = {
     },
     itemStyle: {
       color: (params) => {
-        const data = config.series.data
-        return params.data[2] === data[data.length - 1][2]
-          ? '#ffb300'
-          : 'rgba(23, 119, 255, 0.50)'
+        const data = Array.isArray(config.series) && config.series[0].data as string[][]
+        if (Array.isArray(params.data)) {
+          return params.data[2] === data[data.length - 1][2]
+            ? '#ffb300'
+            : 'rgba(23, 119, 255, 0.50)'
+        } else {
+          return '#ffb300'
+        }
       }
     },
     data: []
-  }
+  } ]
 }
 let echarts: EChartsType
 const isEmpty = ref(false)
 // 设置数据
 const upDate = () => {
   if (props.datum.length) {
-    config.series.data = cloneDeep(props.datum)
+    if (Array.isArray(config.series)) {
+      config.series[0].data = cloneDeep(props.datum)
+    }
     echarts.setOption(config)
   } else {
     isEmpty.value = true
