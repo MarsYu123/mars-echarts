@@ -14,7 +14,7 @@
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { initPercent, rem2px } from '../utils/util.js'
-import { merge } from 'lodash-es'
+import {cloneDeep, merge} from 'lodash-es'
 import { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
@@ -188,18 +188,9 @@ const upDate = () => {
     return
   }
   echarts.clear()
-  targetConfig.series = []
-  if (Array.isArray(targetConfig.xAxis)) {
-    targetConfig.xAxis[0].data = []
-  }
-  if (Array.isArray(config.series)) {
-    config.series?.splice(0)
-  }
-  if (Array.isArray(config.xAxis)) {
-    config.xAxis[0].data = [] 
-  }
-  merge(targetConfig, props.datum)
-  echarts.setOption(merge(config, targetConfig))
+  const options = cloneDeep(config)
+  merge(options, targetConfig, props.datum)
+  echarts.setOption(options)
 }
 onMounted(() => {
   echarts = echartsPlugin.init(echartsRef.value)

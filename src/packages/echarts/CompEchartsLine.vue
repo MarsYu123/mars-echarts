@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import { merge } from 'lodash-es'
+import { cloneDeep, merge } from 'lodash-es'
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { initPercent, rem2px } from '../utils/util'
 import { onMounted, ref } from 'vue'
@@ -275,20 +275,15 @@ const upDate = () => {
     isEmpty.value = true
     return
   }
+  echarts.clear()
+  const options = cloneDeep(config)
   if (Array.isArray(props.datum.xAxis)){
     if (props.datum.xAxis[0].data.length < 2 && props.type !== 'line') {
-      targetConfig.grid.bottom = 0
+      options.grid.bottom = 0
     } 
   }
-  echarts.clear()
-  targetConfig.series = []
-  targetConfig.xAxis[0].data = []
-  if (Array.isArray(config.series)) {
-    config.series?.splice(0)
-  }
-  config.xAxis[0].data.splice(0)
-  merge(targetConfig, props.datum)
-  echarts.setOption(merge(config, targetConfig))
+  merge(options, targetConfig, props.datum)
+  echarts.setOption(options)
 }
 
 const handleTouchEnd = () => {
