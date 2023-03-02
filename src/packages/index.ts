@@ -4,6 +4,7 @@ import CompEchartsBar from './echarts/CompEchartsBar.vue'
 import CompEchartsScatter from './echarts/CompEchartsScatter.vue'
 import CompEchartsPie from './echarts/CompEchartsPie.vue'
 import CompEchartsEmpty from './echarts/CompEchartsEmpty.vue'
+import type { EChartsOption } from './utils/echarts.config'
 
 const components = {
   CompEchartsLine,
@@ -30,5 +31,6 @@ export {
   CompEchartsBar,
   CompEchartsScatter,
   CompEchartsPie,
-  CompEchartsEmpty
+  CompEchartsEmpty,
+  EChartsOption
 }
