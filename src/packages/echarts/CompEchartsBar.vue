@@ -61,7 +61,9 @@ const config: EChartsOption = {
     splitLine: {
       show: true,
       lineStyle: {
-        color: 'rgba(229,229,229,0.5)'
+        color: '#E5E5E5',
+        width: 0.5,
+        opacity: .5
       }
     },
     axisLabel: {
@@ -187,17 +189,29 @@ const upDate = () => {
     isEmpty.value = true
     return
   }
+  hideLoading()
   echarts.clear()
   const options = cloneDeep(config)
   merge(options, targetConfig, props.datum)
   echarts.setOption(options)
 }
+
+const showLoading = () => {
+  isEmpty.value = true
+}
+
+const hideLoading = () => {
+  isEmpty.value = false
+}
+
 onMounted(() => {
   echarts = echartsPlugin.init(echartsRef.value)
 })
 // 暴露给父元素
 defineExpose({
-  upDate
+  upDate,
+  hideLoading,
+  showLoading
 })
 
 </script>

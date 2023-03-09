@@ -1,19 +1,19 @@
 <template>
   <div
-    v-if="!isEmpty"
+    v-show="!isEmpty"
     ref="echartsRef"
     class="comp-echarts echarts"
     :class="type"
     @touchstart="handleTouchStart"
     @touchend="handleTouchEnd" />
-  <comp-echarts-empty v-else :type="type"/>
+  <comp-echarts-empty v-if="isEmpty" :type="type"/>
 </template>
 
 <script lang="ts" setup>
 import { cloneDeep, merge } from 'lodash-es'
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { initPercent, rem2px } from '../utils/util'
-import { onMounted, ref } from 'vue'
+import {nextTick, onMounted, ref} from 'vue'
 import type { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
@@ -275,15 +275,24 @@ const upDate = () => {
     isEmpty.value = true
     return
   }
+  hideLoading()
   echarts.clear()
   const options = cloneDeep(config)
   if (Array.isArray(props.datum.xAxis)){
     if (props.datum.xAxis[0].data.length < 2 && props.type !== 'line') {
       options.grid.bottom = 0
-    } 
+    }
   }
   merge(options, targetConfig, props.datum)
   echarts.setOption(options)
+}
+
+const showLoading = () => {
+  isEmpty.value = true
+}
+
+const hideLoading = () => {
+  isEmpty.value = false
 }
 
 const handleTouchEnd = () => {
@@ -315,7 +324,9 @@ onMounted(() => {
 })
 
 defineExpose({
-  upDate
+  upDate,
+  hideLoading,
+  showLoading
 })
 </script>
 

@@ -82,16 +82,19 @@ const datum2 = {
 }
 let toggleActive = 0
 const toggle = () => {
-  if (toggleActive === 0) {
-    data.value = datum2
-    toggleActive = 1
-  } else {
-    data.value = datum
-    toggleActive = 0
-  }
-  nextTick(() => {
-    elRef.value.upDate()
-  })
+  elRef.value.showLoading()
+  setTimeout(() => {
+    if (toggleActive === 0) {
+      data.value = datum2
+      toggleActive = 1
+    } else {
+      data.value = datum
+      toggleActive = 0
+    }
+    nextTick(() => {
+      elRef.value.upDate()
+    })
+  }, 1000)
 }
 </script>
 
