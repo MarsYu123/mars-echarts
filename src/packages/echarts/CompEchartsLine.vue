@@ -13,7 +13,7 @@
 import { cloneDeep, merge } from 'lodash-es'
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { initPercent, rem2px } from '../utils/util'
-import {nextTick, onMounted, ref} from 'vue'
+import { onMounted, ref } from 'vue'
 import type { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<{
     isPer: true
   })
 let targetConfig = {} as EChartsOption
+let resultConfig = {} as EChartsOption
 let echarts: EChartsType
 const config: EChartsOption = {
   grid: {
@@ -168,7 +169,7 @@ const createdConfig = () => {
           rotate: 45,
           padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
           formatter: (value: string, index: number) => {
-            if (index === 0 && config.xAxis[0].data?.length > 1) {
+            if (index === 0 && resultConfig.xAxis[0].data?.length > 1) {
               return `{a|${value}}`
             } else {
               return value
@@ -271,20 +272,21 @@ const createdConfig = () => {
 
 const isEmpty = ref(false)
 const upDate = () => {
+  resultConfig = {}
   if (!props.datum.series) {
     isEmpty.value = true
     return
   }
   hideLoading()
   echarts.clear()
-  const options = cloneDeep(config)
+  resultConfig = cloneDeep(config)
   if (Array.isArray(props.datum.xAxis)){
     if (props.datum.xAxis[0].data.length < 2 && props.type !== 'line') {
-      options.grid.bottom = 0
+      resultConfig.grid.bottom = 0
     }
   }
-  merge(options, targetConfig, props.datum)
-  echarts.setOption(options)
+  merge(resultConfig, targetConfig, props.datum)
+  echarts.setOption(resultConfig)
 }
 
 const showLoading = () => {

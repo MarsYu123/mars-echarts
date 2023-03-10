@@ -14,7 +14,7 @@
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { initPercent, rem2px } from '../utils/util.js'
-import {cloneDeep, merge} from 'lodash-es'
+import { cloneDeep, merge } from 'lodash-es'
 import { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<{
   })
 
 let targetConfig = {} as EChartsOption
+let resultConfig = {} as EChartsOption
 let echarts: EChartsType
 
 const config: EChartsOption = {
@@ -88,7 +89,7 @@ const config: EChartsOption = {
       let text = ''
       if (Array.isArray(value)) {
         value.forEach((i) => {
-          const unit = (config.series[i.seriesIndex as keyof typeof config.series] as any).valType || '%'
+          const unit = (resultConfig.series[i.seriesIndex as keyof typeof resultConfig.series] as any).valType || '%'
           text += `<p><span class="rect" style="background: ${i.color}"></span>${initPercent(i.value as string, false)}${unit}</p>`
         })
         return `
@@ -185,15 +186,16 @@ const handleTouchStart = () => {
 
 const isEmpty = ref(false)
 const upDate = () => {
+  resultConfig = {}
   if (!props.datum.series) {
     isEmpty.value = true
     return
   }
   hideLoading()
   echarts.clear()
-  const options = cloneDeep(config)
-  merge(options, targetConfig, props.datum)
-  echarts.setOption(options)
+  resultConfig = cloneDeep(config)
+  merge(resultConfig, targetConfig, props.datum)
+  echarts.setOption(resultConfig)
 }
 
 const showLoading = () => {
