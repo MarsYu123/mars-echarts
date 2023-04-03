@@ -19,14 +19,15 @@ export const getType = (obj: any) => {
  * @param [isFixed] {Boolean} 是否将0转为0.00
  * @returns {String}
  */
-export const initPercent = (value: string | number | null, isPer = true, isFixed = false): string => {
+export const initPercent = (value: string | number | null, isPer = true,  isFixed = false): string => {
   if (isEmpty(value)) {
     return '--'
   } else {
     if (+value === 0) {
       return isFixed ? '0.00%' : '0'
     } else {
-      return (+value).toFixed(2)+ (isPer ? '%' : '')
+      const symbol = +value > 0 ? '+' :''
+      return symbol + (+value).toFixed(2)+ (isPer ? '%' : '')
     }
   }
 }
@@ -120,4 +121,15 @@ export const dateArea = (type: string) => {
     y = Number(type.split('_')[1])
     return [ `${y}-01-01`, `${y}-12-31` ]
   }
+}
+
+// 把元转换成合适单位
+export const moneyTransform = (number: number): string => {
+  const B = 10000 * 10000
+  const M = 10000 * 100
+  if (number > B) {
+    return (number / B).toFixed(2) + '亿'
+  } else if (number > M) {
+    return (number / M).toFixed(2) + '百万'
+  } else return (number / 10000).toFixed(2) + '万'
 }

@@ -9,6 +9,10 @@ const resolve = (dir: string) => path.join(__dirname, dir)
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 4000
+  },
   plugins: [ vue(), dts() ],
   resolve: {
     alias: [

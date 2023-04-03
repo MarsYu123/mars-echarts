@@ -187,6 +187,7 @@ const handleTouchStart = () => {
 const isEmpty = ref(false)
 const upDate = () => {
   resultConfig = {}
+  echarts.hideLoading()
   if (!props.datum.series) {
     isEmpty.value = true
     return
@@ -208,6 +209,9 @@ const hideLoading = () => {
 
 onMounted(() => {
   echarts = echartsPlugin.init(echartsRef.value)
+  echarts.showLoading({
+    lineWidth: 3
+  })
 })
 // 暴露给父元素
 defineExpose({
@@ -218,6 +222,6 @@ defineExpose({
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "../styles/echarts";
 </style>

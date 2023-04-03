@@ -17,6 +17,8 @@ import { onMounted, ref } from 'vue'
 import type { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
+const emits = defineEmits([ 'mousedown', 'mouseup' ])
+
 const echartsRef = ref<HTMLElement>()
 const props = withDefaults(defineProps<{
     type: string
@@ -273,6 +275,7 @@ const createdConfig = () => {
 const isEmpty = ref(false)
 const upDate = () => {
   resultConfig = {}
+  echarts.hideLoading()
   if (!props.datum.series) {
     isEmpty.value = true
     return
@@ -323,6 +326,15 @@ onMounted(() => {
   echarts = echartsPlugin.init(echartsRef.value)
   // 执行方法
   createdConfig()
+  echarts.on('mousedown', (param) => {
+    emits('mousedown', param)
+  })
+  echarts.on('mouseup', () => {
+    emits('mouseup')
+  })
+  echarts.showLoading({
+    lineWidth: 3
+  })
 })
 
 defineExpose({
@@ -332,7 +344,7 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "../styles/echarts";
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div class="compEchartsEmpty echarts" :class="$attrs.type">
+<div class="compEchartsEmpty echarts comp-echarts" :class="$attrs.type">
   <div class="echarts-top">
     <div class="echarts-yaxis">
       <div
@@ -28,7 +28,7 @@
 </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "../styles/echarts.scss";
 .compEchartsEmpty {
   display: flex;

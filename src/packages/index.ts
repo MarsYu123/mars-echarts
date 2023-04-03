@@ -4,6 +4,7 @@ import CompEchartsBar from './echarts/CompEchartsBar.vue'
 import CompEchartsScatter from './echarts/CompEchartsScatter.vue'
 import CompEchartsPie from './echarts/CompEchartsPie.vue'
 import CompEchartsEmpty from './echarts/CompEchartsEmpty.vue'
+import CompEchartsDoubleLine from './echarts/CompEchartsDoubleLine.vue'
 import type { EChartsOption } from './utils/echarts.config'
 
 const components = {
@@ -11,7 +12,8 @@ const components = {
   CompEchartsBar,
   CompEchartsScatter,
   CompEchartsPie,
-  CompEchartsEmpty
+  CompEchartsEmpty,
+  CompEchartsDoubleLine
 }
 // 循环注册组件
 const install = function (App: App) {
@@ -32,5 +34,6 @@ export {
   CompEchartsScatter,
   CompEchartsPie,
   CompEchartsEmpty,
+  CompEchartsDoubleLine,
   EChartsOption
 }

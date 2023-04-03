@@ -1,113 +1,122 @@
 <template>
-  <div ref="echartsRef" class="comp-echarts echarts" />
+  <div
+    v-show="!isEmpty"
+    ref="echartsRef"
+    class="comp-echarts echarts pie"
+    @touchend="handleTouchEnd"
+  />
+  <comp-echarts-empty v-if="isEmpty" />
 </template>
 
 <script setup lang="ts">
 import echartsPlugin from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { EChartsType } from 'echarts/core'
+import { cloneDeep, merge } from 'lodash-es'
+import CompEchartsEmpty from '@/packages/echarts/CompEchartsEmpty.vue'
+import { rem2px } from '@/packages/utils/util'
+
+const props = defineProps<{
+  datum: EChartsOption
+  text: boolean
+}>()
 
 const echartsRef = ref<HTMLElement>()
-const data = [
-  [ {
-    value: 40,
-    name: '股票型'
-  }, {
-    value: 30,
-    name: '混合型'
-  }, {
-    value: 30,
-    name: '债券型'
-  } ],
-  [ {
-    value: 40,
-    name: '普通混合型'
-  }, {
-    value: 24,
-    name: '灵活配置型'
-  }, {
-    value: 6,
-    name: '偏股混合型'
-  }, {
-    value: 3,
-    name: '偏债混合型'
-  }, {
-    value: 18,
-    name: '混合债券型一级'
-  }, {
-    value: 9,
-    name: '增强指数型债券'
-  } ]
-]
 
-const config = {
-  legend: [
+const config: EChartsOption = {
+  tooltip: [
     {
-      data: data[0].map(i => i.name),
-      icon: 'roundRect',
-      bottom: '10',
-      itemGap: 40
-    },
-    {
-      data: data[1].map(i => i.name),
-      icon: 'circle',
-      right: '10',
-      top: 'middle',
-      orient: 'vertical',
-      itemWidth: 8,
-      itemHeight: 8,
-      formatter: (val: string) => {
-        let text = ''
-        data[1].forEach(i => {
-          if (i.name === val) {
-            text = `${val}: ${i.value}%`
-          }
-        })
-        return text
-      }
+      className: 'echarts-toolsTips',
+      hideDelay: 200,
+      confine: true,
+      alwaysShowContent: false,
+      trigger: 'item',
+      renderMode: 'html',
+      borderWidth: 0,
+      textStyle: {
+        color: '#fff',
+        fontSize: rem2px(.2),
+        lineHeight: rem2px(.28)
+      },
+      formatter: (value) => {
+        if (!Array.isArray(value)){
+          return `
+           <div class="echarts-tools-box">
+            <p><span class="rect" style="background: ${value.color}"></span>${value.name}: ${value.value}%</p>
+           </div>
+          `
+        }}
     }
   ],
   series: [
     {
-      center: [ '25%', '50%' ],
-      labelLine: {
-        show: false
-      },
-      label: {
-        position: 'inside',
-        formatter: (val: IObj) => {
-          return `${val.data.value}%`
-        }
-      },
-      name: 'level1',
-      radius: [ '40%', '60%' ],
-      type: 'pie',
-      percentPrecision: '0',
-      data: data[0]
-    },
-    {
-      center: [ '25%', '50%' ],
       labelLine: {
         show: false
       },
       label: {
         show: false
       },
-      name: 'level2',
-      radius: [ 0, '30%' ],
+      radius: [ '0', '94%' ],
       type: 'pie',
-      data: data[1]
+      data: [],
+      itemStyle: {
+        borderColor: '#fff',
+        borderWidth: 1
+      }
     }
   ]
 }
+let resultConfig: EChartsOption = {}
+
+const isEmpty = ref(false)
+const upDate = () => {
+  echarts.hideLoading()
+  resultConfig = {}
+  if (!props.datum) {
+    isEmpty.value = true
+    return
+  }
+  hideLoading()
+  echarts.clear()
+  resultConfig = cloneDeep(config)
+  merge(resultConfig, props.datum)
+  echarts.setOption(resultConfig)
+}
+
+const showLoading = () => {
+  isEmpty.value = true
+}
+
+const hideLoading = () => {
+  isEmpty.value = false
+}
+
+
 let echarts: EChartsType
 onMounted(() => {
   echarts = echartsPlugin.init(echartsRef.value)
-  echarts.setOption(config)
+  echarts.showLoading({
+    lineWidth: 3
+  })
 })
+const handleTouchEnd = () => {
+  setTimeout(() => {
+    echarts.dispatchAction({
+      type: 'hideTip'
+    })
+    echarts.dispatchAction({
+      type: 'downplay'
+    })
+  }, 1000)
+}
+
+defineExpose({ upDate, showLoading, hideLoading })
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "../styles/echarts.scss";
+.echarts.pie{
+  @include wh(3.4);
+}
 </style>

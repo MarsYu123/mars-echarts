@@ -38,7 +38,7 @@ export type ECOption = echarts.ComposeOption<
 >;
 
 export type EChartsOption = ECOption & {
-  xAxis?: CategoryAxisBaseOption[],
+  xAxis?: Array<CategoryAxisBaseOption | ValueAxisBaseOption>,
   yAxis?: ValueAxisBaseOption[]
 }
 
