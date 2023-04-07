@@ -1,20 +1,39 @@
 <template>
   <div>这是首页</div>
   <div class="ecahrts-box">
-    <comp-echarts-scatter type="normal" ref="elRef" :datum='datum'/>
+    <comp-echarts-line ref="elRef" type="stackLine" :datum='datum'/>
+<!--    <comp-echarts-line ref="elRef1" type="normal" :datum='datum2'/>-->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import CompEchartsDoubleLine from '@/packages/echarts/CompEchartsDoubleLine.vue'
-import CompEchartsPie from "@/packages/echarts/CompEchartsPie.vue";
-import CompEchartsScatter from "@/packages/echarts/CompEchartsScatter.vue";
+import CompEchartsPie from '@/packages/echarts/CompEchartsPie.vue'
+import CompEchartsScatter from '@/packages/echarts/CompEchartsScatter.vue'
+import CompEchartsLine from '@/packages/echarts/CompEchartsLine.vue'
 
 const elRef = ref()
-const datum = {"series":[{"data":[[5,11.65,59333230641.0729,1.55,"创业板指"],[2.34,7.53,12191825483.4117,8.37,"中证1000"],[1.71,7.24,25398557496.2758,7.19,"中证500(沪)"],[1.14,10.32,351270780503.1757,1.1,"上证50"],[1.23,9.36,159270015514.5,4.31,"沪深300"],[4.81,null,61625924823.515,11.02,"科创50"]],"itemStyle":{}}]}
+const elRef1 = ref()
+const datum = {
+  "yAxis": [{"minInterval": 0.1, "axisLabel": {}}],
+  "xAxis": [{
+    "data": ["2016-06-30", "2016-12-31", "2017-06-30", "2017-12-31", "2018-06-30", "2018-12-31", "2019-06-30", "2019-12-31"],
+    "axisLabel": {"interval": "auto", "showMaxLabel": true}
+  }],
+  "series": [{
+    "type": "line",
+    "data": [13.835962527, 19.6334423679, 13.6606467861, 9.5114040978, 12.4142442368, 9.1248429316, 6.7856728003, 4.2453251359, 6.9061479218, 10.7258302446, 4.2665743194, 6.5918588167, 3.761947676, 7.2140784265],
+    "connectNulls": true,
+    "symbol": "none",
+    "color": "#1777FF",
+    "lineStyle": {"color": "#1777FF", "width": 1},
+    "emphasis": {"disabled": true, "focus": false}
+  }]
+}
 onMounted(() => {
   elRef.value.upDate()
+  // elRef1.value.upDate()
 })
 </script>
 

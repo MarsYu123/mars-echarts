@@ -130,6 +130,27 @@ const config: EChartsOption = {
 }
 
 const createdConfig = () => {
+  const rotateLabel = {
+    rotate: 45,
+    fontSize: 10,
+    margin: rem2px(.2),
+    padding: [ 0, rem2px(-.02), 0, 0 ],
+    formatter: (value: string, index: number) => {
+      const _length = resultConfig.xAxis[0].data?.length
+      if (index === 0 && _length < 7 && _length > 1) {
+        return `{a|${value}}`
+      } else {
+        return value
+      }
+    },
+    rich: {
+      a: {
+        padding: [ rem2px(.7), rem2px(-.34), 0, 0 ],
+        fontSize: rem2px(.2),
+        color: '#222A41'
+      }
+    }
+  }
   // 净值走势图
   if (props.type === 'line') {
     targetConfig = {
@@ -152,9 +173,6 @@ const createdConfig = () => {
   } else if (props.type === 'normal') {
     // 常规折线图
     targetConfig = {
-      grid: {
-        bottom: rem2px(-.6)
-      },
       yAxis: [ {
         scale: true,
         splitNumber: 4
@@ -167,33 +185,13 @@ const createdConfig = () => {
         axisTick: {
           show: false
         },
-        axisLabel: {
-          rotate: 45,
-          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
-          formatter: (value: string, index: number) => {
-            if (index === 0 && resultConfig.xAxis[0].data?.length > 1) {
-              return `{a|${value}}`
-            } else {
-              return value
-            }
-          },
-          rich: {
-            a: {
-              padding: [ rem2px(.7), rem2px(-.36), 0, 0 ],
-              fontSize: rem2px(.2),
-              color: '#222A41'
-            }
-          }
-        },
+        axisLabel: rotateLabel,
         boundaryGap: false
       } ]
     }
   } else if (props.type === 'stack') {
     // 堆叠图
     targetConfig = {
-      grid: {
-        bottom: rem2px(-.6)
-      },
       yAxis: [ {
         max: 100,
         min: 0,
@@ -203,26 +201,7 @@ const createdConfig = () => {
         }
       } ],
       xAxis: [ {
-        axisLabel: {
-          rotate: 45,
-          fontSize: 10,
-          showMinLabel: true,
-          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
-          formatter: (value: string, index: number) => {
-            if (index === 0) {
-              return `{a|${value}}`
-            } else {
-              return value
-            }
-          },
-          rich: {
-            a: {
-              padding: [ rem2px(.5), rem2px(-.3), 0, 0 ],
-              fontSize: rem2px(.2),
-              color: '#222A41'
-            }
-          }
-        },
+        axisLabel: rotateLabel,
         axisTick: {
           show: false
         }
@@ -231,9 +210,6 @@ const createdConfig = () => {
   } else if (props.type === 'stackLine') {
     // 堆叠折线图
     targetConfig = {
-      grid: {
-        bottom: rem2px(-.6)
-      },
       yAxis: [ {
         axisLabel: {
           margin: rem2px(.08),
@@ -243,27 +219,7 @@ const createdConfig = () => {
         }
       } ],
       xAxis: [ {
-        axisLabel: {
-          rotate: 45,
-          fontSize: 10,
-          showMinLabel: true,
-          showMaxLabel: true,
-          padding: [ rem2px(.26), 0, rem2px(.26), 0 ],
-          formatter: (value: string, index: number) => {
-            if (index === 0) {
-              return `{a|${value}}`
-            } else {
-              return value
-            }
-          },
-          rich: {
-            a: {
-              padding: [ rem2px(.5), rem2px(-.3), 0, 0 ],
-              fontSize: rem2px(.2),
-              color: '#222A41'
-            }
-          }
-        },
+        axisLabel: rotateLabel,
         axisTick: {
           show: false
         }
@@ -284,8 +240,15 @@ const upDate = () => {
   echarts.clear()
   resultConfig = cloneDeep(config)
   if (Array.isArray(props.datum.xAxis)){
-    if (props.datum.xAxis[0].data.length < 2 && props.type !== 'line') {
-      resultConfig.grid.bottom = 0
+    if (props.type !== 'line') {
+      const _length = props.datum.xAxis[0].data.length
+      if (_length < 7 && _length > 1) {
+        resultConfig.grid.bottom = rem2px(-.7)
+      }
+      resultConfig.xAxis[0].axisLabel.showMinLabel = _length < 7
+      if (_length < 2) {
+        resultConfig.grid.bottom = 0
+      }
     }
   }
   merge(resultConfig, targetConfig, props.datum)

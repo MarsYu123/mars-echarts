@@ -358,6 +358,7 @@ defineExpose({
     position: absolute;
     left: 0.45rem;
     top: 0;
+    pointer-events: none;
     &:before,&:after{
       display: block;
       content: '';
