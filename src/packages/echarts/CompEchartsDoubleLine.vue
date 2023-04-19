@@ -181,11 +181,14 @@ const upDate = () => {
 }
 
 const showLoading = () => {
-  isEmptyVal.value = true
+  echarts.showLoading({
+    lineWidth: 3
+  })
 }
 
 const hideLoading = () => {
   isEmptyVal.value = false
+  echarts.hideLoading()
 }
 
 const handleTouchEnd = () => {

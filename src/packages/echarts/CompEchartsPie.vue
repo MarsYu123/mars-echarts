@@ -84,11 +84,14 @@ const upDate = () => {
 }
 
 const showLoading = () => {
-  isEmpty.value = true
+  echarts.showLoading({
+    lineWidth: 3
+  })
 }
 
 const hideLoading = () => {
   isEmpty.value = false
+  echarts.hideLoading()
 }
 
 
