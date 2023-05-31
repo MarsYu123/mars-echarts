@@ -7,6 +7,9 @@
     &.stack,&.double,&.normal,&.stackLine{
       height: 3.53rem;
     }
+    &.treemap{
+      height: 100%;
+    }
     .echarts-toolsTips {
       display: none;
       box-shadow: none !important;
