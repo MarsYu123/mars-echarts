@@ -11,11 +11,13 @@ import {
   TransformComponent,
   LegendComponent,
   MarkLineComponent,
+  VisualMapComponent,
   TitleComponentOption,
   TooltipComponentOption,
   GridComponentOption,
   MarkLineComponentOption,
-  AxisPointerComponentOption
+  AxisPointerComponentOption,
+  VisualMapComponentOption
 } from 'echarts/components'
 // 标签自动布局，全局过渡动画等特性
 import { LabelLayout, UniversalTransition } from 'echarts/features'
@@ -36,6 +38,7 @@ export type ECOption = echarts.ComposeOption<
   | PieSeriesOption
   | MarkLineComponentOption
   | AxisPointerComponentOption
+  | VisualMapComponentOption
 >;
 
 export type EChartsOption = ECOption & {
@@ -52,6 +55,7 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   MarkLineComponent,
+  VisualMapComponent,
   LineChart,
   ScatterChart,
   BarChart,
