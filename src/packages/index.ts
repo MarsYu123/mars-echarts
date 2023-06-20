@@ -6,7 +6,9 @@ import CompEchartsPie from './echarts/CompEchartsPie.vue'
 import CompEchartsEmpty from './echarts/CompEchartsEmpty.vue'
 import CompEchartsDoubleLine from './echarts/CompEchartsDoubleLine.vue'
 import CompEchartsTreemap from './echarts/CompEchartsTreemap.vue'
+import echartsPlugin from './utils/echarts.config'
 import type { EChartsOption } from './utils/echarts.config'
+import type { EChartsType } from 'echarts/core'
 
 const components = {
   CompEchartsLine,
@@ -38,5 +40,7 @@ export {
   CompEchartsEmpty,
   CompEchartsDoubleLine,
   CompEchartsTreemap,
-  EChartsOption
+  EChartsOption,
+  EChartsType,
+  echartsPlugin
 }
