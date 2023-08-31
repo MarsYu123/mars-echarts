@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep, debounce, merge } from 'lodash-es'
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { initPercent, rem2px } from '../utils/util'
 import { onMounted, ref } from 'vue'
@@ -78,7 +78,7 @@ const config: EChartsOption = {
         left = pos[0] - size.contentSize[0] - 10
       }
       return {
-        top: 20,
+        top: 4,
         left
       }
     }
@@ -255,6 +255,10 @@ const upDate = () => {
   echarts.setOption(resultConfig)
 }
 
+const getEcharts = () => {
+  return echarts
+}
+
 const showLoading = () => {
   echarts.showLoading({
     lineWidth: 3
@@ -266,7 +270,7 @@ const hideLoading = () => {
   echarts.hideLoading()
 }
 
-const handleTouchEnd = () => {
+const handleTouchEnd = debounce(function () {
   echarts.dispatchAction({
     type: 'hideTip'
   })
@@ -277,7 +281,7 @@ const handleTouchEnd = () => {
       }
     }
   })
-}
+}, 1500)
 const handleTouchStart = () => {
   echarts.setOption({
     xAxis: {
@@ -302,11 +306,11 @@ onMounted(() => {
     lineWidth: 3
   })
 })
-
 defineExpose({
   upDate,
   hideLoading,
-  showLoading
+  showLoading,
+  getEcharts
 })
 </script>
 

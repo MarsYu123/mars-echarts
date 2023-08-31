@@ -14,7 +14,7 @@
 import echartsPlugin, { EChartsOption } from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { initPercent, rem2px } from '../utils/util.js'
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep, debounce, merge } from 'lodash-es'
 import { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
 
@@ -106,7 +106,7 @@ const config: EChartsOption = {
         left = pos[0] - size.contentSize[0] - 10
       }
       return {
-        top: 20,
+        top: 4,
         left
       }
     }
@@ -162,7 +162,8 @@ if (props.type === 'stack') {
     series: []
   }
 }
-const handleTouchEnd = () => {
+
+const handleTouchEnd = debounce(function () {
   echarts.dispatchAction({
     type: 'hideTip'
   })
@@ -173,7 +174,7 @@ const handleTouchEnd = () => {
       }
     }
   })
-}
+}, 1500)
 const handleTouchStart = () => {
   echarts.setOption({
     xAxis: {

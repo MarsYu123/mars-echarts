@@ -1,70 +1,41 @@
 <template>
   <div>这是首页</div>
   <div class="ecahrts-box">
-    <comp-echarts-treemap ref="elRef" :datum="datum" />
-    <button @click="toggle">切换</button>
+    <comp-echarts-radar ref="elRef" :datum="datum" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, reactive, ref} from 'vue'
-import CompEchartsTreemap from '@/packages/echarts/CompEchartsTreemap.vue'
+import { nextTick, onMounted, reactive, ref } from 'vue'
+import CompEchartsRadar from '@/packages/echarts/CompEchartsRadar.vue'
 
 const elRef = ref()
-const datum = reactive({})
-const toggle = () => {
-  datum.series[0].data = [
+const datum = reactive({
+  series: [
     {
-      name: 'nodeA',
-      value: 120
-    },
-    {
-      name: 'nodeA',
-      value: 210
-    },
-    {
-      name: 'nodeA',
-      value: 115
-    },
-    {
-      name: 'nodeA',
-      value: 130
+      type: 'radar',
+      data: [
+        {
+          value: [ 30, 60, 10 ],
+          name: '基金100'
+        }
+      ],
+      symbol: 'none',
+      lineStyle: {
+        color: '#1777FF',
+        width: 1
+      },
+      areaStyle: {
+        color: '#1777FF',
+        opacity: .5
+      }
     }
   ]
-  nextTick(() => {
-    elRef.value.upDate()
-  })
-}
+})
+
 onMounted(() => {
-  Object.assign(datum, {
-    series: [
-      {
-        data: [
-          {
-            name: 'nodeA',
-            value: 10
-          },
-          {
-            name: 'nodeA',
-            value: 20
-          },
-          {
-            name: 'nodeA',
-            value: 15
-          },
-          {
-            name: 'nodeA',
-            value: 30
-          },
-          {
-            name: 'nodeA',
-            value: 28
-          }
-        ]
-      }
-    ]
-  })
   nextTick(() => {
+    console.log(elRef.value)
     elRef.value.upDate()
   })
 })
@@ -73,6 +44,6 @@ onMounted(() => {
 <style scoped lang="scss">
 .ecahrts-box {
   padding: 0 .6rem;
-  height: 80vh;
+  height: 4rem;
 }
 </style>

@@ -23,11 +23,12 @@ export const initPercent = (value: string | number | null, isPer = true,  isFixe
   if (isEmpty(value)) {
     return '--'
   } else {
-    if (+value === 0) {
-      return isFixed ? '0.00%' : '0'
+    const valueNum = +value
+    if (valueNum === 0) {
+      return (isFixed ? '0.00' : '0') + (isPer ? '%' : '')
     } else {
-      const symbol = +value > 0 ? '+' :''
-      return symbol + (+value).toFixed(2)+ (isPer ? '%' : '')
+      // 防止去小数点后2位变0.00
+      return (Math.abs(valueNum) < 0.005 ? valueNum.toFixed(4) : valueNum.toFixed(2))  + (isPer ? '%' : '')
     }
   }
 }

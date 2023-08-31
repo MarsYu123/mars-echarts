@@ -6,6 +6,7 @@ import CompEchartsPie from './echarts/CompEchartsPie.vue'
 import CompEchartsEmpty from './echarts/CompEchartsEmpty.vue'
 import CompEchartsDoubleLine from './echarts/CompEchartsDoubleLine.vue'
 import CompEchartsTreemap from './echarts/CompEchartsTreemap.vue'
+import CompEchartsRadar from '@/packages/echarts/CompEchartsRadar.vue'
 import echartsPlugin from './utils/echarts.config'
 import type { EChartsOption } from './utils/echarts.config'
 import type { EChartsType } from 'echarts/core'
@@ -17,7 +18,8 @@ const components = {
   CompEchartsPie,
   CompEchartsEmpty,
   CompEchartsDoubleLine,
-  CompEchartsTreemap
+  CompEchartsTreemap,
+  CompEchartsRadar
 }
 // 循环注册组件
 const install = function (App: App) {
@@ -40,6 +42,7 @@ export {
   CompEchartsEmpty,
   CompEchartsDoubleLine,
   CompEchartsTreemap,
+  CompEchartsRadar,
   EChartsOption,
   EChartsType,
   echartsPlugin

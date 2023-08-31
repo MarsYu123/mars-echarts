@@ -14,7 +14,7 @@ import { onMounted, ref } from 'vue'
 import { EChartsOption } from '@/packages'
 import echartsPlugin from '@/packages/utils/echarts.config'
 import { EChartsType } from 'echarts/core'
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep, debounce, merge } from 'lodash-es'
 import { rem2px, isEmpty } from '@/packages/utils/util'
 
 const props = defineProps<{
@@ -38,33 +38,30 @@ const config: EChartsOption = {
       fontSize: rem2px(.2),
       lineHeight: rem2px(.28)
     },
-    formatter: (value) => {
-      if (Array.isArray(value)) {
-        const data = value[0]
-        let title = '成交量'
-        let val = (+data.data).toFixed(2)
-        if (data.seriesIndex === 1) {
-          title = '收盘价'
-        } else {
-          val = (+val / 10000 / 10000).toFixed(2)+'亿'
-        }
-        return `
-        <div class="echarts-tools-box">
-          <p>${title}</p>
-          ${data.name}: ${val}元
-        </div>
-      `
-      }
-    }
+		position: (pos, params, dom, rect, size) => {
+			let [ left, top ] = pos
+			if ((size.viewSize[0] - size.contentSize[0]) < pos[0] - 20) {
+				left = pos[0] - size.contentSize[0] - 10
+			}
+			if (top < 70) {
+				top = 0
+			} else {
+				top -= 70
+			}
+			return {
+				top,
+				left
+			}
+		}
   },
   grid: [ {
-    left: rem2px(.82),
-    right: rem2px(.2),
+		left: rem2px(1),
+		right: rem2px(.1),
     top: rem2px(.1),
     height: rem2px(2.44)
   }, {
-    left: rem2px(.82),
-    right: rem2px(.2),
+		left: rem2px(1),
+		right: rem2px(.1),
     height: Math.floor(rem2px(.82)),
     bottom: rem2px(.56)
   } ],
@@ -81,7 +78,7 @@ const config: EChartsOption = {
     axisLabel: {
       formatter: (value: string, index: number) => {
         if (index === 0) {
-          return '成交量'
+          return '收盘价'
         }
       },
       color: '#818498',
@@ -191,7 +188,7 @@ const hideLoading = () => {
   echarts.hideLoading()
 }
 
-const handleTouchEnd = () => {
+const handleTouchEnd = debounce(function () {
   echarts.dispatchAction({
     type: 'hideTip'
   })
@@ -206,7 +203,7 @@ const handleTouchEnd = () => {
       }
     } ]
   })
-}
+}, 1500)
 
 let echarts: EChartsType
 const echartsRef = ref()

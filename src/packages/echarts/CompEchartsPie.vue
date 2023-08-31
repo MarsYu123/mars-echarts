@@ -12,7 +12,7 @@
 import echartsPlugin from '../utils/echarts.config'
 import { onMounted, ref } from 'vue'
 import { EChartsType } from 'echarts/core'
-import { cloneDeep, merge } from 'lodash-es'
+import { cloneDeep, debounce, merge } from 'lodash-es'
 import CompEchartsEmpty from '@/packages/echarts/CompEchartsEmpty.vue'
 import { rem2px } from '@/packages/utils/util'
 
@@ -102,7 +102,7 @@ onMounted(() => {
     lineWidth: 3
   })
 })
-const handleTouchEnd = () => {
+const handleTouchEnd = debounce(function () {
   setTimeout(() => {
     echarts.dispatchAction({
       type: 'hideTip'
@@ -111,7 +111,7 @@ const handleTouchEnd = () => {
       type: 'downplay'
     })
   }, 1000)
-}
+}, 1500)
 
 defineExpose({ upDate, showLoading, hideLoading })
 

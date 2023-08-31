@@ -1,7 +1,7 @@
 import * as echarts from 'echarts/core'
 
 import { ValueAxisBaseOption, CategoryAxisBaseOption } from 'echarts/types/src/coord/axisCommonTypes'
-import { BarSeriesOption, LineSeriesOption, PieSeriesOption, ScatterSeriesOption } from 'echarts/charts'
+import { BarSeriesOption, LineSeriesOption, PieSeriesOption, ScatterSeriesOption, RadarSeriesOption } from 'echarts/charts'
 import {
   AxisPointerComponentOption,
   GridComponentOption,
@@ -22,6 +22,7 @@ declare global {
     | PieSeriesOption
     | MarkLineComponentOption
     | AxisPointerComponentOption
+    | RadarSeriesOption
   >;
 
   type EChartsOption = ECOption & {
