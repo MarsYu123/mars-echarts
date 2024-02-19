@@ -16,6 +16,9 @@
         v-for="i in 2"
         :key="i"
         class="col"/>
+      <div class="echarts-grid-title">
+        暂无数据
+      </div>
     </div>
   </div>
   <div class="echarts-bottom">
@@ -75,6 +78,16 @@
           left: 66%;
         }
       }
+      &-title{
+        @include wh(100% .5);
+        @include font(#ccc .3 .5);
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        text-align: center;
+      }
     }
     &-bottom{
       margin-top: .08rem;
@@ -89,3 +102,5 @@
   }
 }
 </style>
+<script setup lang="ts">
+</script>

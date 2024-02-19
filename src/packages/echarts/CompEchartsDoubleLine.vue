@@ -16,10 +16,15 @@ import echartsPlugin from '@/packages/utils/echarts.config'
 import { EChartsType } from 'echarts/core'
 import { cloneDeep, debounce, merge } from 'lodash-es'
 import { rem2px, isEmpty } from '@/packages/utils/util'
+import { RendererType } from 'echarts/types/src/util/types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   datum: IObj
-}>()
+  renderer: RendererType
+}>(),
+  {
+    renderer: 'canvas'
+  })
 
 const isEmptyVal = ref(false)
 let resultConfig: EChartsOption = {}
@@ -208,7 +213,9 @@ const handleTouchEnd = debounce(function () {
 let echarts: EChartsType
 const echartsRef = ref()
 onMounted(() => {
-  echarts = echartsPlugin.init(echartsRef.value)
+  echarts = echartsPlugin.init(echartsRef.value, {}, {
+    renderer: props.renderer
+  })
   echarts.showLoading({
     lineWidth: 3
   })
@@ -223,7 +230,7 @@ defineExpose({
 </script>
 <style lang="scss">
 @import "../styles/echarts.scss";
-.comp-echarts.doubleLine {
+.comp-echarts.echarts.doubleLine {
   height: 4.34rem;
 }
 </style>

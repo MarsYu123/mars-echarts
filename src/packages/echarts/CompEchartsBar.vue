@@ -17,14 +17,17 @@ import { initPercent, rem2px } from '../utils/util.js'
 import { cloneDeep, debounce, merge } from 'lodash-es'
 import { EChartsType } from 'echarts/core'
 import CompEchartsEmpty from '../echarts/CompEchartsEmpty.vue'
+import { RendererType } from 'echarts/types/src/util/types'
 
 const echartsRef = ref<HTMLElement>()
 const props = withDefaults(defineProps<{
-    type: string,
+    type: string
     datum: EChartsOption
+    renderer: RendererType
   }>(),
   {
-    type: 'stack'
+    type: 'stack',
+    renderer: 'canvas'
   })
 
 let targetConfig = {} as EChartsOption
@@ -212,7 +215,9 @@ const hideLoading = () => {
 }
 
 onMounted(() => {
-  echarts = echartsPlugin.init(echartsRef.value)
+  echarts = echartsPlugin.init(echartsRef.value, {}, {
+    renderer: props.renderer
+  })
   echarts.showLoading({
     lineWidth: 3
   })

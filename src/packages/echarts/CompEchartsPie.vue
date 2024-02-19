@@ -15,11 +15,15 @@ import { EChartsType } from 'echarts/core'
 import { cloneDeep, debounce, merge } from 'lodash-es'
 import CompEchartsEmpty from '@/packages/echarts/CompEchartsEmpty.vue'
 import { rem2px } from '@/packages/utils/util'
+import {RendererType} from 'echarts/types/src/util/types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   datum: EChartsOption
   text: boolean
-}>()
+  renderer: RendererType
+}>(), {
+  renderer: 'canvas'
+})
 
 const echartsRef = ref<HTMLElement>()
 
@@ -97,7 +101,9 @@ const hideLoading = () => {
 
 let echarts: EChartsType
 onMounted(() => {
-  echarts = echartsPlugin.init(echartsRef.value)
+  echarts = echartsPlugin.init(echartsRef.value, {}, {
+    renderer: 'canvas'
+  })
   echarts.showLoading({
     lineWidth: 3
   })

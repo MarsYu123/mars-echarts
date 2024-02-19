@@ -290,11 +290,13 @@ const createdConfig = () => {
         max: 1.5
       } ],
       series: [ {
+        // 四年以上均为5，按照年份依次按系数变大
         symbolSize: function (val: string[]) {
           const year = +(val[2]?.split('-')[0]) || 2000
           const nowYear = new Date().getFullYear()
           const diffYear = nowYear - year
-          return diffYear < 4 ? Math.pow(4 - diffYear, 1.7) * 3.4 : 5
+          const diffValue = diffYear < 4 ? Math.pow(5 - diffYear, 1.5) * 3.2 : 5
+          return diffValue
         },
         itemStyle: {
           color: (params: any) => {
